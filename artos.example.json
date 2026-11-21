@@ -39,5 +39,14 @@
     "allow_external_uploads": false,
     "allow_outgoing_email": false,
     "allow_destructive_actions": false
-  }
+  },
+  "execution": {
+    "python": null,
+    "job_timeout_seconds": null,
+    "poll_seconds": 10,
+    "min_free_gpu_mib": 16384,
+    "max_concurrent_jobs": null,
+    "mcp": null
+  },
+  "approvals": {}
 }

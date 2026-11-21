@@ -1,0 +1,621 @@
+{
+  "$defs": {
+    "AcceptanceRule": {
+      "additionalProperties": false,
+      "description": "One pre-registered numeric comparison, evaluated per seed then aggregated.\n\n``rel_improve``: (|ref| - |cand|) / |ref| >= threshold  (lower-is-better, signed errors by magnitude)\n``rel_degrade``: (|cand| - |ref|) / |ref| <= threshold  (guardrail on a lower-is-better metric)\n``abs_degrade``: ref - cand <= threshold                 (guardrail on a higher-is-better metric)\n``toward_one_improve``: |ref - 1| - |cand - 1| >= threshold (std ratios)",
+      "properties": {
+        "candidate": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Candidate",
+          "type": "string"
+        },
+        "group": {
+          "enum": [
+            "primary",
+            "guardrail"
+          ],
+          "title": "Group",
+          "type": "string"
+        },
+        "hypothesis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "metric": {
+          "title": "Metric",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "rel_improve",
+            "rel_degrade",
+            "abs_degrade",
+            "toward_one_improve"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "reference": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Reference",
+          "type": "string"
+        },
+        "rule_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule_id",
+        "hypothesis_id",
+        "group",
+        "candidate",
+        "reference",
+        "variable",
+        "metric",
+        "mode",
+        "threshold"
+      ],
+      "title": "AcceptanceRule",
+      "type": "object"
+    },
+    "AnalysisContract": {
+      "additionalProperties": true,
+      "description": "Pre-registered plan. Frozen and hashed before any test data is read.",
+      "properties": {
+        "acceptance_rules": {
+          "items": {
+            "$ref": "#/$defs/AcceptanceRule"
+          },
+          "title": "Acceptance Rules",
+          "type": "array"
+        },
+        "code_refs": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "repo -> commit",
+          "title": "Code Refs",
+          "type": "object"
+        },
+        "compute_budget": {
+          "$ref": "#/$defs/ComputeBudget"
+        },
+        "contract_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "datasets": {
+          "items": {
+            "$ref": "#/$defs/DatasetSpec"
+          },
+          "minItems": 1,
+          "title": "Datasets",
+          "type": "array"
+        },
+        "decision_policy": {
+          "$ref": "#/$defs/DecisionPolicy"
+        },
+        "decision_rules": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Decision Rules",
+          "type": "object"
+        },
+        "interpretation_limits": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Interpretation Limits",
+          "type": "array"
+        },
+        "kind": {
+          "const": "analysis_contract",
+          "default": "analysis_contract",
+          "title": "Kind",
+          "type": "string"
+        },
+        "leakage_controls": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Leakage Controls",
+          "type": "array"
+        },
+        "metrics": {
+          "items": {
+            "$ref": "#/$defs/MetricSpec"
+          },
+          "minItems": 1,
+          "title": "Metrics",
+          "type": "array"
+        },
+        "mother_question_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Mother Question Sha256",
+          "type": "string"
+        },
+        "null_controls": {
+          "items": {
+            "$ref": "#/$defs/ControlSpec"
+          },
+          "minItems": 1,
+          "title": "Null Controls",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": 2,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "seeds": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Seeds",
+          "type": "array"
+        },
+        "selected_hypothesis_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.:\\-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Selected Hypothesis Ids",
+          "type": "array"
+        },
+        "splits": {
+          "items": {
+            "$ref": "#/$defs/SplitSpec"
+          },
+          "title": "Splits",
+          "type": "array"
+        },
+        "stopping_rule": {
+          "title": "Stopping Rule",
+          "type": "string"
+        },
+        "test_access_history": {
+          "items": {
+            "$ref": "#/$defs/TestAccess"
+          },
+          "title": "Test Access History",
+          "type": "array"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/VariantSpec"
+          },
+          "title": "Variants",
+          "type": "array"
+        }
+      },
+      "required": [
+        "contract_id",
+        "mother_question_sha256",
+        "selected_hypothesis_ids",
+        "datasets",
+        "metrics",
+        "null_controls",
+        "stopping_rule"
+      ],
+      "title": "AnalysisContract",
+      "type": "object"
+    },
+    "ComputeBudget": {
+      "additionalProperties": true,
+      "properties": {
+        "cpu_hours": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Cpu Hours",
+          "type": "number"
+        },
+        "gpu_hours": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Gpu Hours",
+          "type": "number"
+        },
+        "max_attempts_per_job": {
+          "default": 2,
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Max Attempts Per Job",
+          "type": "integer"
+        },
+        "max_jobs": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Jobs"
+        }
+      },
+      "title": "ComputeBudget",
+      "type": "object"
+    },
+    "ControlSpec": {
+      "additionalProperties": true,
+      "properties": {
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "isolates": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Isolates"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "definition"
+      ],
+      "title": "ControlSpec",
+      "type": "object"
+    },
+    "DatasetSpec": {
+      "additionalProperties": true,
+      "properties": {
+        "fingerprint_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fingerprint Method"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "period": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Period"
+        },
+        "region": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "variables": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Variables",
+          "type": "array"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        }
+      },
+      "required": [
+        "name",
+        "role"
+      ],
+      "title": "DatasetSpec",
+      "type": "object"
+    },
+    "DecisionPolicy": {
+      "additionalProperties": false,
+      "description": "How per-seed rule outcomes become a hypothesis verdict.",
+      "properties": {
+        "inconclusive": {
+          "default": "anything else, including missing metrics or seed disagreement",
+          "title": "Inconclusive",
+          "type": "string"
+        },
+        "min_seed_agreement": {
+          "default": 1.0,
+          "description": "Fraction of seeds whose paired outcome must pass",
+          "exclusiveMinimum": 0,
+          "maximum": 1.0,
+          "title": "Min Seed Agreement",
+          "type": "number"
+        },
+        "supported": {
+          "default": "every primary and guardrail rule passes on the seed mean and on >= min_seed_agreement of seeds",
+          "title": "Supported",
+          "type": "string"
+        },
+        "unsupported": {
+          "default": "a primary rule's seed-mean effect is in the wrong direction (no improvement) on most seeds",
+          "title": "Unsupported",
+          "type": "string"
+        }
+      },
+      "title": "DecisionPolicy",
+      "type": "object"
+    },
+    "MetricSpec": {
+      "additionalProperties": true,
+      "properties": {
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "direction": {
+          "default": "report",
+          "enum": [
+            "lower",
+            "higher",
+            "abs_lower",
+            "toward_one",
+            "report"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "group": {
+          "default": "other",
+          "enum": [
+            "primary",
+            "guardrail",
+            "secondary",
+            "cost",
+            "other"
+          ],
+          "title": "Group",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "definition"
+      ],
+      "title": "MetricSpec",
+      "type": "object"
+    },
+    "SplitSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "title": "End",
+          "type": "string"
+        },
+        "name": {
+          "enum": [
+            "train",
+            "validation",
+            "test"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "purpose": {
+          "title": "Purpose",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "start",
+        "end",
+        "source",
+        "purpose"
+      ],
+      "title": "SplitSpec",
+      "type": "object"
+    },
+    "TestAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "accessed": {
+          "title": "Accessed",
+          "type": "string"
+        },
+        "actor": {
+          "title": "Actor",
+          "type": "string"
+        },
+        "scope": {
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "accessed",
+        "scope"
+      ],
+      "title": "TestAccess",
+      "type": "object"
+    },
+    "VariantSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "overrides": {
+          "additionalProperties": true,
+          "title": "Overrides",
+          "type": "object"
+        },
+        "role": {
+          "enum": [
+            "baseline",
+            "control",
+            "candidate",
+            "ablation"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "variant_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Variant Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variant_id",
+        "description",
+        "role"
+      ],
+      "title": "VariantSpec",
+      "type": "object"
+    }
+  },
+  "$id": "artos://schemas/frozen-contract.v2.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "$ref": "#/$defs/AnalysisContract"
+    },
+    "contract_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "frozen_at": {
+      "format": "date-time",
+      "title": "Frozen At",
+      "type": "string"
+    },
+    "frozen_path": {
+      "title": "Frozen Path",
+      "type": "string"
+    },
+    "kind": {
+      "const": "frozen_contract",
+      "default": "frozen_contract",
+      "title": "Kind",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:\\-]+$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "contract_sha256",
+    "frozen_at",
+    "frozen_path",
+    "contract"
+  ],
+  "title": "FrozenContract",
+  "type": "object"
+}

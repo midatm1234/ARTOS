@@ -1,0 +1,226 @@
+{
+  "$defs": {
+    "BlindCard": {
+      "additionalProperties": false,
+      "properties": {
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/LiteratureEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "expected_benefit": {
+          "title": "Expected Benefit",
+          "type": "string"
+        },
+        "falsification": {
+          "title": "Falsification",
+          "type": "string"
+        },
+        "implementation_cost": {
+          "title": "Implementation Cost",
+          "type": "string"
+        },
+        "mechanism": {
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "card_id",
+        "statement",
+        "mechanism",
+        "expected_benefit",
+        "implementation_cost",
+        "falsification",
+        "evidence"
+      ],
+      "title": "BlindCard",
+      "type": "object"
+    },
+    "ClaimType": {
+      "enum": [
+        "published_finding",
+        "proposed_idea",
+        "local_measurement"
+      ],
+      "title": "ClaimType",
+      "type": "string"
+    },
+    "LiteratureEvidence": {
+      "additionalProperties": false,
+      "description": "One source. ``verified`` means the primary page was fetched and matched.",
+      "properties": {
+        "citation": {
+          "description": "arXiv ID, DOI, or repository path",
+          "minLength": 3,
+          "title": "Citation",
+          "type": "string"
+        },
+        "claim": {
+          "minLength": 5,
+          "title": "Claim",
+          "type": "string"
+        },
+        "claim_type": {
+          "$ref": "#/$defs/ClaimType"
+        },
+        "evidence_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "first_author": {
+          "title": "First Author",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "supports",
+            "conflicts",
+            "context"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "venue": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Venue"
+        },
+        "verification_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verification Method"
+        },
+        "verified": {
+          "title": "Verified",
+          "type": "boolean"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 1900,
+          "title": "Year",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "citation",
+        "title",
+        "first_author",
+        "year",
+        "verified",
+        "claim",
+        "claim_type",
+        "relation"
+      ],
+      "title": "LiteratureEvidence",
+      "type": "object"
+    }
+  },
+  "$id": "artos://schemas/ranking-packet.v2.schema.json",
+  "additionalProperties": false,
+  "description": "What a ranking agent sees: shuffled cards, no proposer ordering or scores.",
+  "properties": {
+    "cards": {
+      "items": {
+        "$ref": "#/$defs/BlindCard"
+      },
+      "title": "Cards",
+      "type": "array"
+    },
+    "criteria": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Criteria",
+      "type": "array"
+    },
+    "hypothesis_set_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Hypothesis Set Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "ranking_packet",
+      "default": "ranking_packet",
+      "title": "Kind",
+      "type": "string"
+    },
+    "mother_question": {
+      "title": "Mother Question",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:\\-]+$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "mother_question",
+    "criteria",
+    "cards",
+    "seed",
+    "hypothesis_set_sha256"
+  ],
+  "title": "RankingPacket",
+  "type": "object"
+}

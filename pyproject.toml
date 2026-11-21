@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "artos-research-orchestrator"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local-first, auditable research orchestration with independent agent review"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["pydantic>=2.7"]
 
 [project.optional-dependencies]
 report = ["python-pptx>=0.6.23"]
@@ -26,4 +26,4 @@ where = ["src"]
 testpaths = ["tests"]
 
 [project.urls]
-Homepage = "https://github.com/sudshu/ARTOS"
+Homepage = "https://github.com/midatm1234/ARTOS"

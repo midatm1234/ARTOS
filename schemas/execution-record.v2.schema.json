@@ -1,0 +1,200 @@
+{
+  "$defs": {
+    "JobState": {
+      "enum": [
+        "planned",
+        "submitting",
+        "submitted",
+        "running",
+        "succeeded",
+        "failed",
+        "cancelled",
+        "unknown_after_crash"
+      ],
+      "title": "JobState",
+      "type": "string"
+    }
+  },
+  "$id": "artos://schemas/execution-record.v2.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "attempt": {
+      "minimum": 0,
+      "title": "Attempt",
+      "type": "integer"
+    },
+    "code_refs": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Code Refs",
+      "type": "object"
+    },
+    "data_versions": {
+      "additionalProperties": true,
+      "title": "Data Versions",
+      "type": "object"
+    },
+    "environment": {
+      "additionalProperties": true,
+      "title": "Environment",
+      "type": "object"
+    },
+    "executor": {
+      "title": "Executor",
+      "type": "string"
+    },
+    "external_job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Job Id"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "kind": {
+      "const": "execution_record",
+      "default": "execution_record",
+      "title": "Kind",
+      "type": "string"
+    },
+    "max_attempts": {
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note"
+    },
+    "output_dir": {
+      "title": "Output Dir",
+      "type": "string"
+    },
+    "outputs": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "name -> sha256",
+      "title": "Outputs",
+      "type": "object"
+    },
+    "peak_memory_bytes": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Peak Memory Bytes"
+    },
+    "return_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Return Code"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:\\-]+$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "runtime_seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Runtime Seconds"
+    },
+    "schema_version": {
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    },
+    "state": {
+      "$ref": "#/$defs/JobState"
+    },
+    "submitted_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Submitted At"
+    },
+    "variant_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:\\-]+$",
+      "title": "Variant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "idempotency_key",
+    "variant_id",
+    "seed",
+    "executor",
+    "state",
+    "attempt",
+    "max_attempts",
+    "output_dir"
+  ],
+  "title": "ExecutionRecord",
+  "type": "object"
+}

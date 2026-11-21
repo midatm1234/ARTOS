@@ -30,10 +30,10 @@ A run moves through the stages shown above; every stage leaves an auditable arti
 
 ## Install and try it
 
-The orchestrator is a dependency-free Python package (Python ≥ 3.10):
+The orchestrator is a Python package (Python ≥ 3.10) whose only dependency is Pydantic v2:
 
 ```bash
-git clone https://github.com/sudshu/ARTOS && cd ARTOS
+git clone https://github.com/midatm1234/ARTOS && cd ARTOS
 pip install -e .
 cp artos.example.json artos.json   # project configuration
 artos doctor                       # environment and configuration check
@@ -52,18 +52,22 @@ artos doctor                       # environment and configuration check
 }
 ```
 
-The full command surface ships with this skeleton; `artos doctor` works end to end, and the remaining commands expose their real interfaces and exit with a staged-release notice:
+Commands (v0.2). See [docs/running-and-resuming.md](docs/running-and-resuming.md) for the full workflow and [docs/architecture-decision.md](docs/architecture-decision.md) for the design:
 
 | Command group | Commands |
 |---|---|
-| `artos doctor` | environment and configuration check (**works now**) |
+| `artos doctor` | environment, store integrity, and agent tooling check |
 | `artos inventory` | `refresh`, `show` |
 | `artos data` | `register <path>` |
-| `artos run` | `create`, `list`, `show`, `transition`, `snapshot-inventory`, `freeze-contract` |
-| `artos hypotheses` | `init`, `packet`, `aggregate`, `rank` |
-| `artos session` | `launch`, `status`, `watch` |
-| `artos audit` | `init` |
+| `artos run` | `create`, `list`, `show`, `route`, `transition`, `snapshot-inventory`, `freeze-contract`, `cancel`, `events` |
+| `artos hypotheses` | `init`, `packet` (blind), `aggregate`, `rank` |
+| `artos plan` | `write` (experiments bound to the frozen contract) |
+| `artos jobs` | `step` (idempotent submit/poll/recover; `--wait`), `status`, `resolve` |
+| `artos evaluate` | deterministic evaluation against the contract's acceptance rules |
+| `artos session` | `launch` (isolated work dir + tmux), `status`, `watch` |
+| `artos audit` | `init`, `adopt` |
 | `artos report` | `init`, `manifest` |
+| `artos schemas` | `export` (JSON Schemas generated from the Pydantic models) |
 
 To see every artifact a run produces, browse the fully synthetic example in [`examples/synthetic-demo-run/`](examples/synthetic-demo-run/) — intake through frozen contract, blind hypothesis tournament, adversarial audit findings, and the hash manifest. Every number in it is fabricated and labeled as such.
 
@@ -115,17 +119,13 @@ AI and machine learning in Earth-system science:
 
 ## Availability
 
-This repository is the public skeleton release of ARTOS (v0.1 foundation). It contains the real package interfaces and selected working components:
+v0.2 (branch `feat/typed-research-orchestration`) implements the run store, typed and versioned artifacts, scientific gates, blind ranking, contract freezing, a resumable job controller that does not submit duplicates, deterministic evaluation, and role-isolated agent sessions. 52 unit and subprocess tests cover them. Semantic inventory (v0.2 roadmap item), automatic adversary launch and independent-recomputation task generation (v0.4), and slide production (v0.5) remain planned; see [docs/implementation-plan.md](docs/implementation-plan.md).
 
-- the full CLI surface, with `artos doctor` working end to end;
-- the science-gate **state machine** (`src/artos/state_machine.py`) and its test, which rejects any run that tries to skip a stage;
-- the two structured-artifact **schemas** — the pre-registered analysis contract and the adversarial audit findings (`schemas/`);
-- the **architecture document and staged roadmap** (`docs/`), and the agent **operating contract** (`AGENTS.md`);
-- a fully **synthetic example run** (`examples/synthetic-demo-run/`) showing every artifact a run produces.
+What changed from v0.1, and how to use it: [docs/pydantic-architecture-update.md](docs/pydantic-architecture-update.md).
 
-The execution engine — inventory scanning, hypothesis scoring, the run store, and agent-session orchestration — ships with the staged full release; its interfaces are included here as documented stubs. Please cite this page when referring to ARTOS:
+Please cite this page when referring to ARTOS:
 
-> ARTOS: Agentic Research and Targeted-audit Orchestration System. https://github.com/sudshu/ARTOS
+> ARTOS: Agentic Research and Targeted-audit Orchestration System. https://github.com/midatm1234/ARTOS
 
 ## License
 

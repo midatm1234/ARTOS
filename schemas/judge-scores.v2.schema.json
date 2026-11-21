@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "CardScore": {
+      "additionalProperties": false,
+      "properties": {
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:\\-]+$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 10,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "scores": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Scores",
+          "type": "object"
+        },
+        "verdict": {
+          "enum": [
+            "accept",
+            "defer",
+            "reject"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "card_id",
+        "scores",
+        "verdict",
+        "rationale"
+      ],
+      "title": "CardScore",
+      "type": "object"
+    }
+  },
+  "$id": "artos://schemas/judge-scores.v2.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "cards": {
+      "items": {
+        "$ref": "#/$defs/CardScore"
+      },
+      "title": "Cards",
+      "type": "array"
+    },
+    "judge_context": {
+      "description": "How this judge was isolated from the proposer",
+      "title": "Judge Context",
+      "type": "string"
+    },
+    "judge_id": {
+      "title": "Judge Id",
+      "type": "string"
+    },
+    "kind": {
+      "const": "judge_scores",
+      "default": "judge_scores",
+      "title": "Kind",
+      "type": "string"
+    },
+    "packet_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Packet Sha256",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.:\\-]+$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "saw_proposer_ranking": {
+      "default": false,
+      "title": "Saw Proposer Ranking",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "default": 2,
+      "title": "Schema Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "judge_id",
+    "judge_context",
+    "packet_sha256",
+    "cards"
+  ],
+  "title": "JudgeScores",
+  "type": "object"
+}
