@@ -119,7 +119,7 @@ AI and machine learning in Earth-system science:
 
 ## Availability
 
-v0.2 (branch `feat/typed-research-orchestration`) implements the run store, typed and versioned artifacts, scientific gates, blind ranking, contract freezing, a resumable job controller that does not submit duplicates, deterministic evaluation, and role-isolated agent sessions. 52 unit and subprocess tests cover them. Semantic inventory (v0.2 roadmap item), automatic adversary launch and independent-recomputation task generation (v0.4), and slide production (v0.5) remain planned; see [docs/implementation-plan.md](docs/implementation-plan.md).
+v0.2 (branch `ARTOS_pydantic`) implements the run store, typed and versioned artifacts, scientific gates, blind ranking, contract freezing, a resumable job controller that does not submit duplicates, deterministic evaluation, and role-isolated agent sessions. 52 unit and subprocess tests cover them. Semantic inventory (v0.2 roadmap item), automatic adversary launch and independent-recomputation task generation (v0.4), and slide production (v0.5) remain planned; see [docs/implementation-plan.md](docs/implementation-plan.md).
 
 What changed from v0.1, and how to use it: [docs/pydantic-architecture-update.md](docs/pydantic-architecture-update.md).
 

@@ -148,7 +148,7 @@ a dead process on the same host.
 
 ```bash
 git clone git@github.com:midatm1234/ARTOS.git && cd ARTOS
-git checkout feat/typed-research-orchestration
+git checkout ARTOS_pydantic
 python -m pip install -e ".[test]"          # Python >= 3.10; installs pydantic>=2.7
 cp artos.example.json artos.json
 artos doctor                                # core_ok: pydantic + store; agents_ok: tmux + claude

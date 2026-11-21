@@ -1,6 +1,6 @@
 # ADR-001: Orchestration architecture for typed research workflows
 
-Status: accepted (2026-11-20). Branch `feat/typed-research-orchestration`.
+Status: accepted (2026-11-20). Branch `ARTOS_pydantic`.
 
 ## Context
 
