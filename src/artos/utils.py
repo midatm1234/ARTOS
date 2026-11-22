@@ -5,6 +5,7 @@ import json
 import os
 import re
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -50,6 +51,18 @@ def lightweight_file_fingerprint(path: Path, full_hash_limit: int) -> tuple[str,
     return digest.hexdigest(), "sha256-head-tail-size"
 
 
+def _replace(src: str, dst: Path, attempts: int = 50, delay: float = 0.02) -> None:
+    """``os.replace`` that tolerates a reader briefly holding ``dst`` open on Windows."""
+    for i in range(attempts):
+        try:
+            os.replace(src, dst)
+            return
+        except PermissionError:
+            if i == attempts - 1:
+                raise
+            time.sleep(delay)
+
+
 def atomic_write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
@@ -57,7 +70,7 @@ def atomic_write_json(path: Path, payload: Any) -> None:
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, indent=2, sort_keys=True)
             handle.write("\n")
-        os.replace(temporary_name, path)
+        _replace(temporary_name, path)
     except BaseException:
         try:
             os.unlink(temporary_name)
@@ -72,7 +85,7 @@ def atomic_write_text(path: Path, text: str) -> None:
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
             handle.write(text)
-        os.replace(temporary_name, path)
+        _replace(temporary_name, path)
     except BaseException:
         try:
             os.unlink(temporary_name)
@@ -82,7 +95,14 @@ def atomic_write_text(path: Path, text: str) -> None:
 
 
 def read_json(path: Path, default: Any = None) -> Any:
-    if not path.exists():
-        return default
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+    for i in range(50):
+        if not path.exists():
+            return default
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                return json.load(handle)
+        except PermissionError:
+            if i == 49:
+                raise
+            time.sleep(0.02)
+    return default

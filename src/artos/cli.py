@@ -476,6 +476,27 @@ def cmd_report_manifest(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_knowledge_export(args: argparse.Namespace) -> int:
+    from .knowledge import export_bundle, validate_bundle
+
+    _, _, state, _ = _context(args)
+    with _store(state) as store:
+        run_ids = args.run_id or [r["run_id"] for r in store.list_runs(10_000)]
+        result = export_bundle(store, run_ids, args.out, title=args.title, description=args.description,
+                               license_id=args.license)
+    result["validation"] = validate_bundle(args.out)
+    _json(result)
+    return 0 if result["validation"]["conformant"] else 1
+
+
+def cmd_knowledge_validate(args: argparse.Namespace) -> int:
+    from .knowledge import validate_bundle
+
+    result = validate_bundle(args.bundle)
+    _json(result)
+    return 0 if result["conformant"] else 1
+
+
 def cmd_schemas_export(args: argparse.Namespace) -> int:
     _json({"written": [str(p) for p in export_json_schemas(args.directory)]})
     return 0
@@ -648,6 +669,20 @@ def build_parser() -> argparse.ArgumentParser:
     manifest = report_sub.add_parser("manifest")
     manifest.add_argument("run_id")
     manifest.set_defaults(func=cmd_report_manifest)
+
+    knowledge = sub.add_parser("knowledge", help="Export runs as an OKF knowledge bundle and graph")
+    knowledge_sub = knowledge.add_subparsers(dest="knowledge_command", required=True)
+    kexport = knowledge_sub.add_parser("export", help="Write an OKF v0.3 bundle (concept docs, index.md, log.md, graph.json)")
+    kexport.add_argument("out", type=Path)
+    kexport.add_argument("--run-id", action="append", help="Run(s) to export; default: all runs")
+    kexport.add_argument("--title", default="ARTOS research knowledge")
+    kexport.add_argument("--description", default=("Questions, hypotheses, evidence, contracts, experiments, "
+                                                     "evaluations, audits and decisions recorded by ARTOS."))
+    kexport.add_argument("--license")
+    kexport.set_defaults(func=cmd_knowledge_export)
+    kvalidate = knowledge_sub.add_parser("validate", help="Check OKF v0.3 conformance of a bundle")
+    kvalidate.add_argument("bundle", type=Path)
+    kvalidate.set_defaults(func=cmd_knowledge_validate)
 
     schemas = sub.add_parser("schemas", help="Export JSON Schemas generated from the Pydantic models")
     schemas_sub = schemas.add_subparsers(dest="schemas_command", required=True)

@@ -38,10 +38,13 @@ def create_run(
         raise ValueError("source text is empty")
     project = slugify(project_name or "default", "default")
     title = title or source_text.strip().splitlines()[0][:80]
-    run_id = f"{compact_utc_now()}_{slugify(title)}"
-    run_dir = Path(projects_dir) / project / "runs" / run_id
-    if run_dir.exists():
-        raise ValueError(f"run directory already exists: {run_dir}")
+    base_id = f"{compact_utc_now()}_{slugify(title)}"
+    runs_root = Path(projects_dir) / project / "runs"
+    run_id, n = base_id, 1
+    while (runs_root / run_id).exists() or _run_exists(store, run_id):
+        n += 1
+        run_id = f"{base_id}-{n}"
+    run_dir = runs_root / run_id
     for sub in RUN_SUBDIRS:
         (run_dir / sub).mkdir(parents=True, exist_ok=True)
 
@@ -77,6 +80,14 @@ def create_run(
     }
     store.create_run(record)
     return store.get_run(run_id)
+
+
+def _run_exists(store: Store, run_id: str) -> bool:
+    try:
+        store.get_run(run_id)
+        return True
+    except KeyError:
+        return False
 
 
 def snapshot_inventories(run_dir: Path, state_dir: Path) -> list[str]:

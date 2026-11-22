@@ -68,6 +68,7 @@ Commands (v0.2). See [docs/running-and-resuming.md](docs/running-and-resuming.md
 | `artos audit` | `init`, `adopt` |
 | `artos report` | `init`, `manifest` |
 | `artos schemas` | `export` (JSON Schemas generated from the Pydantic models) |
+| `artos knowledge` | `export` (OKF v0.3 knowledge bundle + `graph.json`), `validate` |
 
 To see every artifact a run produces, browse the fully synthetic example in [`examples/synthetic-demo-run/`](examples/synthetic-demo-run/) — intake through frozen contract, blind hypothesis tournament, adversarial audit findings, and the hash manifest. Every number in it is fabricated and labeled as such.
 
@@ -119,9 +120,11 @@ AI and machine learning in Earth-system science:
 
 ## Availability
 
-v0.2 (branch `ARTOS_pydantic`) implements the run store, typed and versioned artifacts, scientific gates, blind ranking, contract freezing, a resumable job controller that does not submit duplicates, deterministic evaluation, and role-isolated agent sessions. 52 unit and subprocess tests cover them. Semantic inventory (v0.2 roadmap item), automatic adversary launch and independent-recomputation task generation (v0.4), and slide production (v0.5) remain planned; see [docs/implementation-plan.md](docs/implementation-plan.md).
+v0.2 (branch `ARTOS_pydantic`) implements the run store, typed and versioned artifacts, scientific gates, blind ranking, contract freezing, a resumable job controller that does not submit duplicates, deterministic evaluation, and role-isolated agent sessions. 57 unit and subprocess tests cover them. Semantic inventory (v0.2 roadmap item), automatic adversary launch and independent-recomputation task generation (v0.4), and slide production (v0.5) remain planned; see [docs/implementation-plan.md](docs/implementation-plan.md).
 
 What changed from v0.1, and how to use it: [docs/pydantic-architecture-update.md](docs/pydantic-architecture-update.md).
+
+Every run can be published to a shared knowledge base in the [Open Knowledge Format](https://okf.md/spec) (concept documents, typed relations and `graph.json`): see [docs/knowledge-base.md](docs/knowledge-base.md).
 
 Please cite this page when referring to ARTOS:
 

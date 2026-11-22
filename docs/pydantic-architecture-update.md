@@ -69,6 +69,7 @@ PydanticAI/pydantic-graph and LangGraph were not adopted for that role.
 | `evaluation.py` | Applies the contract's pre-registered acceptance rules per seed and derives verdicts |
 | `audit.py` | Audit template, adoption of an adversary's findings (with optional layout normalization), gate summary |
 | `inventory.py` | Compute snapshot and a file-level data catalog |
+| `knowledge.py` | Export runs as an OKF v0.3 knowledge bundle (concept documents, typed relations, `graph.json`) and validate conformance; see [knowledge-base.md](knowledge-base.md) |
 
 ### Data models
 
@@ -152,7 +153,7 @@ git checkout ARTOS_pydantic
 python -m pip install -e ".[test]"          # Python >= 3.10; installs pydantic>=2.7
 cp artos.example.json artos.json
 artos doctor                                # core_ok: pydantic + store; agents_ok: tmux + claude
-python -m pytest -q                         # 52 tests
+python -m pytest -q                         # 57 tests
 ```
 
 `core_ok` is all the workflow below needs. `agents_ok` (tmux and the `claude` CLI)
@@ -214,6 +215,9 @@ artos session launch $RUN --role adversary --prompt $RD/prompts/adversary_first_
 artos audit adopt $RUN $RD/work/adversary-1/audit_findings.json
 artos run transition $RUN reporting
 artos run transition $RUN complete             # refused if blocking findings or unearned reproduction claims
+
+# 5. publish to the knowledge base (OKF v0.3)
+artos knowledge export kb/ --run-id $RUN
 ```
 
 A plan entry for the `local` executor:
